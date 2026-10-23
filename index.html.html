@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruta Segura: Evaluación de Riesgos Profesionales</title>
+<style>
+:root{--y:#FFC400;--yd:#E0A800;--k:#151515;--g:#3d4146;--gl:#e8e9eb;--gm:#b9bcc1;--ok:#157a40;--okb:#e3f4ea;--bad:#b3261e;--badb:#fbe9e7}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Roboto,Arial,sans-serif;background:var(--gl);color:var(--k);line-height:1.5}
+.hidden{display:none!important}
+.stripe{height:12px;background:repeating-linear-gradient(-45deg,var(--y) 0 18px,var(--k) 18px 36px)}
+#top{position:sticky;top:0;z-index:20;background:var(--k);color:#fff;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 12px;box-shadow:0 3px 0 var(--y)}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;max-width:960px;margin:0 auto;font-weight:700;font-size:.92rem}
+.row h1{margin:0;font-size:1.1rem;color:var(--y);font-family:"Arial Narrow",Impact,sans-serif;letter-spacing:.4px}
+.track{position:relative;max-width:960px;margin:8px auto 0;height:96px;border-radius:6px;overflow:hidden;background:linear-gradient(#cfd3d8 0 64%,var(--g) 64%);border:2px solid #000}
+.track:before{content:"";position:absolute;left:0;right:0;top:82%;height:3px;background:repeating-linear-gradient(90deg,var(--y) 0 20px,transparent 20px 40px)}
+.goal{position:absolute;right:0;bottom:30%;width:70px;height:72px}
+.lift{--p:0;position:absolute;bottom:12%;width:84px;height:58px;left:calc((100% - 84px - 70px)*var(--p)/100);transition:left 1s cubic-bezier(.4,0,.2,1)}
+.lift svg,.goal svg{width:100%;height:100%;display:block}
+.wheel{transform-box:fill-box;transform-origin:center}
+.lift.go .wheel{animation:spin .5s linear 2}
+.lift.stop{animation:shake .6s}
+.warn{position:absolute;top:6px;left:50%;transform:translateX(-50%);background:var(--bad);color:#fff;font-weight:800;padding:2px 12px;border-radius:4px;opacity:0;font-size:.85rem}
+.warn.show{animation:blink 1.4s}
+.bar{max-width:960px;margin:8px auto 0;height:8px;background:var(--g);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:#2fbf71;transition:width 1s}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@keyframes blink{0%,100%{opacity:0}10%,35%,60%,85%{opacity:1}22%,48%,72%{opacity:.2}}
+main{max-width:960px;margin:0 auto;padding:18px 14px 40px}
+.card{background:#fff;border:2px solid var(--k);border-radius:6px;padding:20px;box-shadow:6px 6px 0 var(--yd)}
+h2{margin:0 0 6px}
+.lvl{display:inline-block;background:var(--k);color:var(--y);font-weight:800;padding:3px 12px;border-radius:3px;font-size:.88rem;margin-bottom:8px}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--y);color:var(--k);border:2px solid var(--k);font-weight:800;padding:11px 20px;border-radius:4px;font-size:1rem}
+.btn:hover{background:var(--yd)}.btn.dk{background:var(--k);color:var(--y)}
+:focus-visible{outline:4px solid var(--ok);outline-offset:2px}
+input[type=text]{width:100%;font-size:1.05rem;padding:12px;border:2px solid var(--g);border-radius:4px}
+.q{font-size:1.2rem;font-weight:700;margin:0 0 12px}
+.opts{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.opt{width:100%;text-align:left;background:#fff;border:2px solid var(--g);border-radius:4px;padding:11px 14px;display:flex;gap:12px}
+.opt b{flex:none;width:26px;height:26px;border-radius:50%;background:var(--k);color:var(--y);display:grid;place-items:center;font-size:.85rem}
+.opt:hover:not(:disabled){background:#fff7d6}.opt:disabled{cursor:default}
+.opt.ok{background:var(--okb);border-color:var(--ok)}.opt.bad{background:var(--badb);border-color:var(--bad)}
+.fb{margin-top:14px;padding:12px 14px;border-left:8px solid;border-radius:4px}
+.fb.ok{background:var(--okb);border-color:var(--ok)}.fb.bad{background:var(--badb);border-color:var(--bad)}
+.fb strong{display:block}
+.nx{margin-top:14px;text-align:right}
+/* Nivel 3 */
+.pool{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin:10px 0 16px;min-height:60px}
+.item{background:#fff7d6;border:2px solid var(--k);border-radius:6px;padding:10px 6px;text-align:center;font-weight:700;font-size:.85rem;cursor:grab}
+.item i{font-style:normal;display:block;font-size:1.9rem;margin-bottom:4px}
+.item.sel{background:var(--y);outline:3px solid var(--k)}
+.zones{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.zone{border:2px dashed var(--g);border-radius:6px;padding:8px;min-height:84px;background:#f6f6f7;text-align:left;width:100%}
+.zone:hover,.zone.over{background:#fff7d6;border-color:var(--k)}
+.zone small{display:block;color:var(--g);margin-bottom:4px;font-size:.8rem}.zone h3{margin:0 0 6px;font-size:.9rem}
+.chip{display:inline-block;margin:2px;padding:2px 9px;border-radius:12px;font-size:.8rem;font-weight:700;color:#fff}
+.chip.ok{background:var(--ok)}.chip.bad{background:var(--bad)}
+.hint{color:var(--g);font-size:.92rem}
+/* Final */
+.score{font-size:3rem;font-weight:900;margin:0;line-height:1.1}
+.pct{font-size:1.3rem;font-weight:700;color:var(--ok);margin:0 0 8px}
+.tbl{width:100%;border-collapse:collapse;margin:12px 0}
+.tbl td,.tbl th{border:2px solid var(--k);padding:8px;text-align:left}
+.tbl th{background:var(--y)}
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+html{-webkit-text-size-adjust:100%}
+body{-webkit-tap-highlight-color:transparent;padding-bottom:env(safe-area-inset-bottom,0px)}
+button,.item,.zone{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+main section{scroll-margin-top:150px}
+.opt{min-height:52px}
+.nx{position:sticky;bottom:0;padding:10px 0 calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),#fff 35%)}
+.nx .btn{min-height:52px}
+#match .nx{position:static;background:none}
+#mf{position:sticky;bottom:calc(8px + env(safe-area-inset-bottom,0px));z-index:5;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.fb.info{background:#fff7d6;border-color:var(--y)}
+@media(max-width:600px){.track{height:72px}.goal{width:52px;height:56px}.lift{width:64px;height:44px;left:calc((100% - 64px - 52px)*var(--p)/100)}.warn{font-size:.75rem;top:3px}#top{padding-left:12px;padding-right:12px}.row h1{font-size:1rem}main{padding:12px 10px 28px}.card{padding:14px;box-shadow:4px 4px 0 var(--yd)}.q{font-size:1.1rem}.opt{padding:12px}.pool{grid-template-columns:repeat(2,1fr)}.zones{grid-template-columns:1fr}.item{min-height:84px;padding:12px 6px;font-size:.88rem}.zone{min-height:72px;padding:10px}.zone h3{font-size:1rem}.score{font-size:2.5rem}.acts .btn,.nx .btn{width:100%}.tbl td,.tbl th{padding:6px;font-size:.88rem}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="top">
+  <div class="row"><h1><span aria-hidden="true">🏗️</span> Ruta Segura</h1><span id="pl">Avance: 0%</span></div>
+  <div class="track" role="img" aria-label="Montacargas avanzando hacia el almacén">
+    <div class="goal" aria-hidden="true"><svg viewBox="0 0 92 104"><rect x="4" y="30" width="84" height="74" fill="#3d4146" stroke="#000" stroke-width="3"/><polygon points="0,32 46,4 92,32" fill="#151515"/><rect x="20" y="52" width="52" height="52" fill="#FFC400" stroke="#000" stroke-width="3"/><path d="M20 66h52M20 80h52M20 94h52" stroke="#000" stroke-width="3"/><text x="46" y="26" text-anchor="middle" font-size="11" font-weight="800" fill="#FFC400" font-family="Arial">BODEGA</text></svg></div>
+    <div class="lift" id="lift" aria-hidden="true"><svg viewBox="0 0 112 78"><rect x="74" y="4" width="6" height="64" fill="#151515"/><rect x="84" y="4" width="5" height="64" fill="#3d4146"/><rect x="82" y="58" width="30" height="5" fill="#151515"/><rect x="92" y="38" width="16" height="20" fill="#c98f3a" stroke="#000" stroke-width="2"/><path d="M14 30V8h48v22" fill="none" stroke="#151515" stroke-width="4"/><rect x="8" y="30" width="68" height="28" rx="4" fill="#FFC400" stroke="#000" stroke-width="3"/><rect x="4" y="36" width="14" height="22" rx="3" fill="#151515"/><circle cx="34" cy="22" r="7" fill="#157a40"/><rect x="28" y="26" width="12" height="6" fill="#157a40"/><g class="wheel"><circle cx="24" cy="62" r="12" fill="#151515"/><circle cx="24" cy="62" r="5" fill="#b9bcc1"/><path d="M24 54v16M16 62h16" stroke="#b9bcc1" stroke-width="2"/></g><g class="wheel"><circle cx="62" cy="64" r="10" fill="#151515"/><circle cx="62" cy="64" r="4" fill="#b9bcc1"/><path d="M62 57v14M55 64h14" stroke="#b9bcc1" stroke-width="2"/></g></svg></div>
+    <div class="warn" id="warn">⚠ ¡PAUSA!</div>
+  </div>
+  <div class="bar" aria-hidden="true"><i id="fill"></i></div>
+</div>
+<div class="stripe" aria-hidden="true"></div>
+
+<main>
+  <section id="start" class="card">
+    <h2>Evaluación de Riesgos Profesionales</h2>
+    <p>Tres niveles: conceptos fundamentales (5 preguntas), casos prácticos y reglas críticas (5) y un desafío visual de EPP (10 ítems). Cada acierto acerca el montacargas a la bodega. Se aprueba con 70 % o más.</p>
+    <label for="nm" style="font-weight:700;display:block;margin-bottom:6px">Nombre completo</label>
+    <input type="text" id="nm" autocomplete="name" placeholder="Escribe tu nombre completo">
+    <p id="ne" class="hidden" role="alert" style="color:var(--bad);font-weight:700;margin:8px 0 0">Escribe tu nombre completo para continuar.</p>
+    <p><button class="btn" id="go">Iniciar el Desafío</button></p>
+  </section>
+
+  <section id="quiz" class="card hidden" aria-live="polite">
+    <span class="lvl" id="qlvl"></span>
+    <div class="hint" id="qn"></div>
+    <h2 class="q" id="qt" tabindex="-1"></h2>
+    <ul class="opts" id="qo"></ul>
+    <div id="qf" class="fb hidden" role="status"></div>
+    <div class="nx"><button class="btn dk hidden" id="qx">Siguiente</button></div>
+  </section>
+
+  <section id="match" class="card hidden" aria-live="polite">
+    <span class="lvl">Nivel 3 · Desafío visual de EPP</span>
+    <h2 class="q">Une cada EPP con la zona o el riesgo que protege</h2>
+    <p class="hint">Arrastra la tarjeta a una zona, o toca la tarjeta y luego la zona. Solo tienes un intento por ítem.</p>
+    <div class="pool" id="pool"></div>
+    <div class="zones" id="zones"></div>
+    <div id="mf" class="fb hidden" role="status"></div>
+    <div class="nx"><button class="btn dk hidden" id="mx">Ver resultados</button></div>
+  </section>
+
+  <section id="end" class="card hidden">
+    <h2 id="et" tabindex="-1"></h2>
+    <p class="score" id="es"></p><p class="pct" id="ep"></p><p id="est" style="font-weight:800;font-size:1.2rem;margin:0 0 6px"></p><p id="em"></p>
+    <table class="tbl"><thead><tr><th>Nivel</th><th>Aciertos</th><th>%</th></tr></thead><tbody id="eb"></tbody></table>
+    <div class="acts"><button class="btn" id="pdf">Descargar Reporte de Resultados en PDF</button><button class="btn dk" id="again">Reiniciar</button></div>
+  </section>
+</main>
+<div class="stripe" aria-hidden="true"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ===== Contenido (edítalo para ajustarlo a tu teoría) ===== */
+const L1=[
+{q:"Según la Organización Mundial de la Salud (OMS), ¿cómo se define la salud?",o:["La ausencia de enfermedades","Un estado de completo bienestar físico, mental y social, y no solo la ausencia de afecciones o enfermedades","La capacidad de trabajar sin faltar","El bienestar físico únicamente"],a:1,e:"La OMS define la salud como un estado de completo bienestar físico, mental y social, y no solo la ausencia de afecciones o enfermedades."},
+{q:"¿Cuál es la clasificación de los factores ambientales del trabajo?",o:["Legales, económicos y políticos","Mecánico, físico, químico, biológico, psicológico, social y moral","Solo físicos y químicos","Internos, externos y personales"],a:1,e:"Los factores ambientales se clasifican en mecánico, físico, químico, biológico, psicológico, social y moral."},
+{q:"¿Qué conjunto enumera consecuencias de los riesgos laborales?",o:["Ascensos, bonos y vacaciones","Mayor productividad y menor costo","Accidentes, enfermedades profesionales, insatisfacción, fatiga y envejecimiento prematuro","Solo lesiones por caídas"],a:2,e:"Los riesgos laborales pueden causar accidentes, enfermedades profesionales, insatisfacción, fatiga y envejecimiento prematuro."},
+{q:"¿Qué opción clasifica correctamente las técnicas de prevención?",o:["Médicas: higiene y ergonomía. No médicas: vacunas y selección","Médicas: selección, vacunas y educación. No médicas: higiene, ergonomía, psicosociología y política social","Médicas: política social. No médicas: educación sanitaria","Todas son técnicas médicas"],a:1,e:"Las técnicas médicas actúan sobre la persona (selección, vacunas, educación); las no médicas, sobre el ambiente y la organización (higiene, ergonomía, psicosociología, política social)."},
+{q:"¿Cuál de estos factores se relaciona con la carga de trabajo y la organización laboral?",o:["Jornadas prolongadas, ritmo intenso, turnos y monotonía","Ruido y vibraciones","Bacterias y virus","Vapores de solventes"],a:0,e:"La carga de trabajo (física y mental) y su organización —jornada, ritmo, turnos, monotonía— generan fatiga e insatisfacción."}];
+const L2=[
+{q:"En una zona con ruido continuo o de impacto superior a 85 dB, ¿qué EPP corresponde?",o:["Goggles","Tapones u orejeras de copa","Casco clase A","Guantes de carnaza"],a:1,e:"Sobre 85 dB hay riesgo de pérdida auditiva: se requiere protección auditiva (tapones u orejeras de copa)."},
+{q:"¿A partir de qué altura es obligatorio aplicar protección contra caídas, y con qué equipo?",o:["Desde 5 m, con cinturón simple","Desde 1.80 m, con arnés de cuerpo completo con amortiguador de impacto","Desde 10 m, con casco","Solo en techos, con cuerda"],a:1,e:"Todo trabajo a partir de 1.80 m es trabajo en altura y exige arnés de cuerpo completo con amortiguador de impacto."},
+{q:"Un casco recibió un impacto severo pero no muestra daños visibles. ¿Qué regla se aplica?",o:["Seguir usándolo si no se ve roto","Pintarlo para ocultar marcas","Reemplazarlo de inmediato","Guardarlo como repuesto"],a:2,e:"Tras un impacto severo el EPP debe reemplazarse de inmediato, aunque no tenga daño visible: pudo perder su capacidad de protección."},
+{q:"¿Cuál es la norma correcta de uso y cuidado del EPP?",o:["Compartirlo entre compañeros para ahorrar","Usarlo personalmente, inspeccionarlo antes de cada uso y almacenarlo limpio y protegido","Revisarlo solo una vez al año","Dejarlo en el vehículo después del turno"],a:1,e:"El EPP es de uso personal, se inspecciona antes de cada uso y se mantiene y almacena limpio, seco y protegido."},
+{q:"En una planta hay hongos, bacterias y vapores de solventes. ¿Cómo se clasifican esos contaminantes?",o:["Hongos y bacterias: físicos; solventes: mecánicos","Hongos y bacterias: biológicos; vapores de solventes: químicos","Todos son psicosociales","Todos son ergonómicos"],a:1,e:"Hongos, bacterias y virus son contaminantes biológicos; vapores, gases, humos y polvos son contaminantes químicos."}];
+const L3=[
+{n:"Casco de seguridad (Clase A/B/C)",i:"🪖",z:0,e:"El casco clase A/B/C protege la cabeza contra caída de objetos y descargas eléctricas."},
+{n:"Goggles / lentes de seguridad",i:"🥽",z:1,e:"Protegen ojos y cara de salpicaduras químicas y partículas."},
+{n:"Tapones / orejeras de copa",i:"🎧",z:2,e:"Protegen los oídos del ruido continuo o de impacto superior a 85 dB."},
+{n:"Respirador con cartuchos / mascarilla",i:"😷",z:3,e:"Protegen las vías respiratorias de polvos, humos y gases tóxicos."},
+{n:"Guantes dieléctricos / nitrilo / carnaza",i:"🧤",z:4,e:"Protegen manos y brazos de quemaduras, cortes y descargas eléctricas."},
+{n:"Botas de seguridad con casquillo",i:"🥾",z:5,e:"Protegen pies y piernas contra aplastamiento y pinchazos."},
+{n:"Overol ignífugo / traje Tyvek",i:"🥼",z:6,e:"Protegen el cuerpo entero de salpicaduras químicas y arco eléctrico."},
+{n:"Arnés de cuerpo completo",i:"🧗",z:7,e:"Detiene caídas a distinto nivel en trabajos a más de 1.80 m."},
+{n:"Careta para soldar",i:"🔥",z:1,e:"Protege ojos y cara de la radiación UV/infrarroja y de las chispas."},
+{n:"Chaleco de alta visibilidad",i:"🦺",z:6,e:"Protege el cuerpo entero contra atropellamientos y permite identificar visualmente al trabajador."}];
+const ZN=["Cabeza","Ojos y cara","Oídos","Vías respiratorias","Manos y brazos","Pies y piernas","Cuerpo entero","Trabajo en altura"];
+const ZH=["Caída de objetos, descargas eléctricas","Salpicaduras, partículas, radiación UV/IR","Ruido continuo o de impacto > 85 dB","Polvos, humos y gases tóxicos","Quemaduras, cortes y descargas","Aplastamiento y pinchazos","Salpicaduras químicas, arco eléctrico, atropellamientos","Caídas a distinto nivel (> 1.80 m)"];
+const NAMES=["Nivel 1: Conceptos fundamentales","Nivel 2: Casos prácticos y reglas críticas","Nivel 3: Desafío visual de EPP"];
+const MAXS=[5,5,10];
+/* ===== Estado ===== */
+const $=id=>document.getElementById(id),LET="ABCD";
+let student="",lv=0,qi=0,hits=0,res=[[],[],[]],sel=null,placed=0,when="";
+const sc=l=>res[l].filter(r=>r.ok).length;
+function prog(){const c=sc(0)+sc(1)+sc(2);$("lift").style.setProperty("--p",c*5);$("fill").style.width=c*5+"%";$("pl").textContent="Avance: "+c*5+"%";}
+function feedback(ok){const l=$("lift");if(ok){prog();l.classList.add("go");setTimeout(()=>l.classList.remove("go"),1100);}else{l.classList.remove("stop");void l.offsetWidth;l.classList.add("stop");const w=$("warn");w.classList.remove("show");void w.offsetWidth;w.classList.add("show");}}
+function view(id){["start","quiz","match","end"].forEach(s=>$(s).classList.toggle("hidden",s!==id));window.scrollTo({top:0,behavior:"smooth"});}
+/* ===== Niveles 1 y 2 ===== */
+function ask(){const Q=(lv?L2:L1)[qi];$("qlvl").textContent=NAMES[lv];$("qn").textContent="Pregunta "+(qi+1)+" de 5";$("qt").textContent=Q.q;$("qf").className="fb hidden";$("qx").classList.add("hidden");
+$("qx").textContent=qi===4?(lv?"Ir al Nivel 3":"Ir al Nivel 2"):"Siguiente";
+const ul=$("qo");ul.innerHTML="";Q.o.forEach((t,i)=>{const li=document.createElement("li"),b=document.createElement("button");b.className="opt";b.type="button";b.innerHTML="<b aria-hidden='true'>"+LET[i]+"</b><span></span>";b.lastChild.textContent=t;b.onclick=()=>pick(i);li.appendChild(b);ul.appendChild(li);});$("qt").focus({preventScroll:true});$("quiz").scrollIntoView({block:"start"});}
+function pick(i){const Q=(lv?L2:L1)[qi],ok=i===Q.a,bs=[...document.querySelectorAll(".opt")];bs.forEach((b,k)=>{b.disabled=true;if(k===Q.a)b.classList.add("ok");});if(!ok)bs[i].classList.add("bad");
+res[lv].push({t:Q.q,ok,r:Q.o[Q.a]});const f=$("qf");f.className="fb "+(ok?"ok":"bad");f.innerHTML="<strong>"+(ok?"¡Correcto! El montacargas avanza.":"Incorrecto. El montacargas se detiene.")+"</strong>";const s=document.createElement("span");s.textContent=(ok?"":"Respuesta correcta: "+Q.o[Q.a]+". ")+Q.e;f.appendChild(s);feedback(ok);$("qx").classList.remove("hidden");$("qx").focus({preventScroll:true});$("qf").scrollIntoView({behavior:"smooth",block:"nearest"});}
+$("qx").onclick=()=>{qi++;if(qi<5)ask();else if(lv===0){lv=1;qi=0;ask();}else{lv=2;startMatch();}};
+/* ===== Nivel 3 ===== */
+function startMatch(){view("match");placed=0;sel=null;$("mf").className="fb hidden";$("mx").classList.add("hidden");
+const pool=$("pool");pool.innerHTML="";L3.map((x,k)=>k).sort(()=>Math.random()-.5).forEach(k=>{const d=document.createElement("div"),x=L3[k];d.className="item";d.id="it"+k;d.draggable=true;d.tabIndex=0;d.setAttribute("role","button");d.setAttribute("aria-pressed","false");d.innerHTML="<i aria-hidden='true'>"+x.i+"</i>"+x.n;
+d.ondragstart=e=>{e.dataTransfer.setData("text/plain",k);pickItem(k,true);};d.onclick=()=>pickItem(k);d.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();pickItem(k);}};pool.appendChild(d);});
+const zs=$("zones");zs.innerHTML="";ZN.forEach((n,z)=>{const b=document.createElement("button");b.type="button";b.className="zone";b.id="zn"+z;b.innerHTML="<h3></h3><small></small>";b.firstChild.textContent=n;b.lastChild.textContent=ZH[z];
+b.onclick=()=>{if(sel!==null)drop(sel,z);};b.ondragover=e=>{e.preventDefault();b.classList.add("over");};b.ondragleave=()=>b.classList.remove("over");b.ondrop=e=>{e.preventDefault();b.classList.remove("over");const k=+e.dataTransfer.getData("text/plain");drop(k,z);};zs.appendChild(b);});}
+function pickItem(k,quiet){document.querySelectorAll(".item").forEach(i=>{i.classList.remove("sel");i.setAttribute("aria-pressed","false");});const el=$("it"+k);if(!el)return;sel=k;el.classList.add("sel");el.setAttribute("aria-pressed","true");if(!quiet){const f=$("mf");f.className="fb info";f.textContent="«"+L3[k].n+"» seleccionado. Toca la zona del cuerpo o el riesgo donde va.";$("zones").scrollIntoView({behavior:"smooth",block:"start"});}}
+function drop(k,z){const el=$("it"+k);if(!el)return;const x=L3[k],ok=x.z===z;el.remove();sel=null;
+const chip=document.createElement("span");chip.className="chip "+(ok?"ok":"bad");chip.textContent=x.n;$("zn"+x.z).appendChild(chip);
+res[2].push({t:x.n+" → "+ZN[x.z],ok,r:ZN[x.z],c:ZN[z]});
+const f=$("mf");f.className="fb "+(ok?"ok":"bad");f.innerHTML="<strong>"+(ok?"¡Correcto! El montacargas avanza.":"Incorrecto: elegiste «"+ZN[z]+"». Se ubicó en «"+ZN[x.z]+"».")+"</strong>";const s=document.createElement("span");s.textContent=x.n+": "+x.e;f.appendChild(s);feedback(ok);
+if(++placed===10){const b=$("mx");b.classList.remove("hidden");b.focus();}else $("pool").scrollIntoView({behavior:"smooth",block:"start"});}
+$("mx").onclick=finish;
+/* ===== Final ===== */
+function msg(p){return p===100?"¡Excelente! El montacargas llegó al almacén. Dominas los riesgos profesionales y el uso del EPP.":p>=70?"¡Muy bien! Estás cerca de la meta. Repasa los puntos que fallaste.":p>=50?"Buen intento. Refuerza las reglas críticas y la selección del EPP.":"Aún no llegas al almacén. Repasa la teoría y vuelve a intentarlo.";}
+function tot(){return sc(0)+sc(1)+sc(2);}
+function finish(){when=new Date().toLocaleString("es-ES");const t=tot(),p=Math.round(t/20*100);$("et").textContent="Resultado de "+student;$("es").textContent=t+" / 20";$("ep").textContent=p+" % de aciertos globales";$("em").textContent=msg(p);const ap=p>=70;$("est").textContent="Estado final: "+(ap?"Aprobado":"Requiere Repaso");$("est").style.color=ap?"#157a40":"#b3261e";
+$("eb").innerHTML="";NAMES.forEach((n,l)=>{const tr=document.createElement("tr"),a=sc(l);[n,a+" / "+MAXS[l],Math.round(a/MAXS[l]*100)+" %"].forEach(v=>{const td=document.createElement("td");td.textContent=v;tr.appendChild(td);});$("eb").appendChild(tr);});view("end");$("et").focus();}
+async function pdf(){if(!window.jspdf){alert("No se pudo cargar jsPDF. Revisa tu conexión a internet e inténtalo de nuevo.");return;}
+const d=new window.jspdf.jsPDF({unit:"mm",format:"a4"}),W=210,M=15,t=tot(),p=Math.round(t/20*100);let y=44;
+d.setFillColor(21,21,21);d.rect(0,0,W,30,"F");d.setFillColor(255,196,0);d.rect(0,30,W,3,"F");d.setTextColor(255,196,0);d.setFont("helvetica","bold");d.setFontSize(18);d.text("Reporte de Resultados",M,15);d.setFontSize(11);d.setTextColor(255,255,255);d.text("Evaluación de Riesgos Profesionales",M,24);
+d.setTextColor(0,0,0);d.setFontSize(12);
+[["Estudiante:",student],["Fecha y hora:",when],["Calificación global:",t+" de 20 ("+p+" %)"],["Estado final:",p>=70?"Aprobado":"Requiere Repaso"]].forEach(r=>{d.setFont("helvetica","bold");d.text(r[0],M,y);d.setFont("helvetica","normal");d.text(r[1],M+42,y);y+=7;});
+y+=2;const m=d.splitTextToSize(msg(p),W-2*M);d.setFont("helvetica","italic");d.text(m,M,y);y+=m.length*5.5+4;
+d.setFont("helvetica","bold");d.setFontSize(13);d.text("Desglose por nivel",M,y);y+=3;d.setDrawColor(255,196,0);d.setLineWidth(.8);d.line(M,y,W-M,y);y+=7;d.setFontSize(11);
+NAMES.forEach((n,l)=>{const a=sc(l);d.setFont("helvetica","normal");d.text(n,M,y);d.setFont("helvetica","bold");d.text(a+" / "+MAXS[l]+"  ("+Math.round(a/MAXS[l]*100)+" %)",W-M-40,y);y+=7;});
+y+=4;d.setFontSize(13);d.text("Detalle de respuestas",M,y);y+=3;d.line(M,y,W-M,y);y+=7;d.setFontSize(10);
+res.forEach((arr,l)=>{if(y>270){d.addPage();y=20;}d.setFont("helvetica","bold");d.text(NAMES[l],M,y);y+=6;
+arr.forEach((r,i)=>{let tx=(i+1)+". "+r.t+" - "+(r.ok?"Correcta":"Incorrecta (correcta: "+r.r+")");const ls=d.splitTextToSize(tx,W-2*M-4);if(y+ls.length*4.8>282){d.addPage();y=20;}
+d.setFont("helvetica","normal");if(r.ok)d.setTextColor(21,122,64);else d.setTextColor(179,38,30);d.text(ls,M+3,y);d.setTextColor(0,0,0);y+=ls.length*4.8+2;});y+=3;});
+const fn="reporte_riesgos_"+student.replace(/[^\w\-]+/g,"_")+".pdf";let dl=null;try{dl=window.claude?await window.claude.use("downloads"):null;}catch(e){}
+if(dl){try{await dl.save({filename:fn,data:d.output("blob")});}catch(e){if(!e||e.code!=="declined")alert("No se pudo guardar el PDF. Inténtalo de nuevo.");}}else d.save(fn);}
+$("pdf").onclick=pdf;
+$("go").onclick=()=>{const n=$("nm").value.trim();if(!n){$("ne").classList.remove("hidden");$("nm").focus();return;}student=n;lv=0;qi=0;res=[[],[],[]];prog();view("quiz");ask();};
+$("nm").onkeydown=e=>{if(e.key==="Enter")$("go").click();};
+$("again").onclick=()=>{res=[[],[],[]];prog();view("start");$("nm").focus();};
+</script>
+</body>
+</html>
